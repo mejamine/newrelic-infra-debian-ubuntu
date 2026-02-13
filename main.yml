@@ -1,0 +1,42 @@
+- name: Install New Relic Infrastructure Agent (Debian/Ubuntu)
+  hosts: debian
+  become: true
+  vars:
+    newrelic_license_key: ""
+
+  tasks:
+
+    - name: Create New Relic config file
+      copy:
+        dest: /etc/newrelic-infra.yml
+        content: |
+          license_key: {{ newrelic_license_key }}
+        mode: '0644'
+
+    - name: Add New Relic GPG key
+      apt_key:
+        url: https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg
+        state: present
+
+    - name: Add New Relic repository
+      apt_repository:
+        repo: "deb [arch={{ debian_arch }}] https://download.newrelic.com/infrastructure_agent/linux/apt {{ debian_release }} main"
+        state: present
+
+    - name: Install libcap (required for privileged mode)
+      apt:
+        name: libcap2-bin
+        state: present
+
+    - name: Install newrelic-infra in privileged mode
+      apt:
+        name: newrelic-infra
+        state: present
+      environment:
+        NRIA_MODE: "PRIVILEGED"
+
+    - name: Enable and start service
+      systemd:
+        name: newrelic-infra
+        state: started
+        enabled: true
