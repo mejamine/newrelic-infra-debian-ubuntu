@@ -40,3 +40,8 @@
         name: newrelic-infra
         state: started
         enabled: true
+    
+    - name: Restart New Relic after installation
+      systemd:
+        name: newrelic-infra
+        state: restarted
