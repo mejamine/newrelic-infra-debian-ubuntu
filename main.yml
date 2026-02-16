@@ -41,7 +41,7 @@
         state: started
         enabled: true
     
-    - name: Restart New Relic after installation
+    - name: Restart New Relic after installation to see the machine in the newrelic UI
       systemd:
         name: newrelic-infra
         state: restarted
